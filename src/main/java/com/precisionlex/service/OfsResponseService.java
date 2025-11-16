@@ -2,12 +2,7 @@ package com.precisionlex.service;
 
 import com.precisionlex.model.*;
 import com.precisionlex.enums.*;
-import com.precisionlex.utils.GeneralOfsParser;
-import com.precisionlex.utils.NumberUtils;
-import com.precisionlex.utils.StringUtils;
-
-import java.util.List;
-import java.util.Optional;
+import com.precisionlex.interfaces.*;
 
 public class OfsResponseService {
 
@@ -57,48 +52,87 @@ public class OfsResponseService {
         request.setOfsResponseText(ofsResponseText);
         requestStore.save(request);
 
-        if (ofsResponseText.contains("TAFJERR-1060: Session Expiration") || ofsResponseText.equals("-1")) {
+        if (ofsResponseText.contains("TAFJERR-1060: Session Expiration") || "-1".equals(ofsResponseText)) {
             // resend failed request
             messageSender.sendMessage(request.getOfsRequestText(), correlationId);
             return;
         }
 
-        // Example: handle NEW_BLOCK
-        if (request.getRequestType().equals(RequestType.NEW_BLOCK.getLabel())) {
-            ReceivedDoc doc = receivedDocStore.findByMessageAndDocId(request.getReceivedMessageId(), request.getDocumentId());
-            CurrentBlockInfo blockInfo = blockInfoStore.findById(request.getCurrentBlockInfoId());
+        RequestType type = RequestType.fromLabel(request.getRequestType());
 
+        switch (type) {
+            case NEW_BLOCK -> handleNewBlock(request, ofsResponseText);
+            case CARD_CHN, CARD_CAN -> {
+                ReceivedDoc doc = receivedDocStore.findByMessageAndDocId(
+                        request.getReceivedMessageId(), request.getDocumentId());
+                updateFreeDisposableAmount(doc);
+                updateDocAndSendCardstaMessage(doc, ReturnResult.ACCEPTED);
+            }
+            case PAYM_INIT -> {
+                RequestedPayment payment = requestedPaymentStore.findByInstrId(request.getDocumentId());
+                payment.setProcessStatus(PaymentProcessStatus.IN_PROGRESS.name());
+                payment.setFtNumber("FT-" + correlationId); // stubbed
+                requestedPaymentStore.save(payment);
+                emailNotifier.notifyPaymentInit(payment);
+            }
+            case PAYM_STATUS -> {
+                RequestedPayment payment = requestedPaymentStore.findByInstrId(request.getDocumentId());
+                payment.setProcessStatus(PaymentProcessStatus.SUCCESS.name()); // stubbed
+                requestedPaymentStore.save(payment);
+                cardstaMessageSender.send(payment);
+            }
+            case GET_BALANCE -> {
+                AvailableAccountBalance balance = availableBalanceStore.findByAccountId(request.getDocumentId());
+                if (balance != null) {
+                    messageSender.sendMessage("Balance retrieved: " + balance.getAvailableAmt(), correlationId);
+                }
+            }
+            default -> messageSender.sendError("Unsupported request type", ofsResponseText);
+        }
+    }
+
+    private void handleNewBlock(OfsRequest request, String ofsResponseText) {
+        ReceivedDoc doc = receivedDocStore.findByMessageAndDocId(
+                request.getReceivedMessageId(), request.getDocumentId());
+        CurrentBlockInfo blockInfo = blockInfoStore.findById(request.getCurrentBlockInfoId());
+
+        if (blockInfo != null) {
             blockInfo.setAcLockedId(ofsResponseText.split("/")[0]);
             blockInfo.setStatus(BlockStatus.ACTIVE.getLabel());
             blockInfoStore.save(blockInfo);
-
-            updateFreeDisposableAmount(doc);
-            updateDocAndSendCardstaMessage(doc, ReturnResult.ACCEPTED);
         }
 
-        // … replicate for other request types (CARD_CHN, CARD_CAN, PAYM_INIT, PAYM_STATUS, GET_BALANCE, etc.)
+        updateFreeDisposableAmount(doc);
+        updateDocAndSendCardstaMessage(doc, ReturnResult.ACCEPTED);
     }
 
     private void updateFreeDisposableAmount(ReceivedDoc doc) {
-        if (doc.getFreeDisposableAmount() != null) {
+        if (doc != null && doc.getFreeDisposableAmount() != null) {
             FreeDisposableAmount record = freeDisposableAmountStore.findByAccount(doc.getPayerAccount());
             if (record != null) {
                 record.setAmount(doc.getFreeDisposableAmount());
             } else {
-                record = new FreeDisposableAmount(doc.getPayerAccount(), doc.getFreeDisposableAmount());
+                record = new FreeDisposableAmount();
+                record.setPayerAccount(doc.getPayerAccount());
+                record.setAmount(doc.getFreeDisposableAmount());
+                record.setReceivedDocId(doc.getId());
             }
             freeDisposableAmountStore.save(record);
         }
     }
 
     private void updateDocAndSendCardstaMessage(ReceivedDoc doc, ReturnResult result) {
+        if (doc == null) return;
+
         doc.setReturnResult(result.getLabel());
         receivedDocStore.save(doc);
 
-        if (result.equals(ReturnResult.DECLINED) && doc.getCurrentBlockInfoId() != null) {
+        if (result == ReturnResult.DECLINED && doc.getCurrentBlockInfoId() != null) {
             CurrentBlockInfo blockInfo = blockInfoStore.findById(doc.getCurrentBlockInfoId());
-            blockInfo.setStatus(BlockStatus.CANCELED.getLabel());
-            blockInfoStore.save(blockInfo);
+            if (blockInfo != null) {
+                blockInfo.setStatus(BlockStatus.CANCELED.getLabel());
+                blockInfoStore.save(blockInfo);
+            }
         }
 
         cardstaMessageSender.send(doc);

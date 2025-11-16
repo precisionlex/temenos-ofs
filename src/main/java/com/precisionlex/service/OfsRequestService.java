@@ -3,6 +3,7 @@ package com.precisionlex.service;
 import com.precisionlex.model.*;
 import com.precisionlex.enums.RequestType;
 import com.precisionlex.utils.Ofs;
+import com.precisionlex.interfaces.*;
 
 import java.util.List;
 
@@ -134,7 +135,7 @@ public class OfsRequestService {
         messageSender.sendMessage(ofsReqMessage, correlationId);
     }
 
-    private String generateCorrelationId(String prefix, Long id) {
+    private String generateCorrelationId(String prefix, String id) {
         return prefix + String.format("%010d", id);
     }
 }
