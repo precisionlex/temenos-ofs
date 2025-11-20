@@ -69,15 +69,14 @@
         </dependency>
     </dependencies>
 
-    <!-- Distribution management (Sonatype OSSRH or GitHub Packages) -->
     <distributionManagement>
         <repository>
             <id>ossrh</id>
-            <url><!-- TODO: staging repo URL (Sonatype or GitHub) --></url>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
             <id>ossrh</id>
-            <url><!-- TODO: snapshot repo URL --></url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -91,6 +90,19 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Nexus staging plugin -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.13</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
 
@@ -130,9 +142,6 @@
                         <id>sign-artifacts</id>
                         <phase>verify</phase>
                         <goals><goal>sign</goal></goals>
-                        <configuration>
-                            <!-- TODO: configure your GPG key here -->
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
