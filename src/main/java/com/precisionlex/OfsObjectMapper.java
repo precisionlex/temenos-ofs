@@ -83,4 +83,111 @@ public class OfsObjectMapper {
 
         return String.join(",", serializedFields);
     }
+
+    public OfsResponse readValue(String ofsResponseString, Class<OfsResponse> clazz) {
+        OfsResponse response = new OfsResponse();
+
+        if (ofsResponseString == null || ofsResponseString.trim().isEmpty()) {
+            return response;
+        }
+
+        int firstCommaIndex = ofsResponseString.indexOf(',');
+        if (firstCommaIndex == -1) {
+            parseResponseHeader(ofsResponseString, response);
+            return response;
+        }
+
+        String header = ofsResponseString.substring(0, firstCommaIndex);
+        String data = ofsResponseString.substring(firstCommaIndex + 1);
+
+        parseResponseHeader(header, response);
+
+        if (!data.trim().isEmpty()) {
+            parseResponseFields(data, response);
+        }
+
+        return response;
+    }
+
+    private void parseResponseHeader(String header, OfsResponse response) {
+        String[] headerParts = header.split("/");
+
+        if (headerParts.length > 0) {
+            response.setRecordId(headerParts[0].trim());
+        }
+
+        if (headerParts.length > 1) {
+            response.setTransactionRef(headerParts[1].trim());
+        }
+
+        if (headerParts.length > 2) {
+
+            response.setStatus(headerParts[2].trim());
+        }
+
+        if (headerParts.length > 3) {
+
+            response.setErrorCode(headerParts[3].trim());
+        }
+    }
+
+    private void parseResponseFields(String data, OfsResponse response) {
+
+        String[] fieldParts = data.split(",");
+
+        for (String fieldPart : fieldParts) {
+            if (fieldPart.trim().isEmpty()) {
+                continue;
+            }
+
+            parseAndAddField(fieldPart.trim(), response);
+        }
+    }
+
+    private void parseAndAddField(String fieldEntry, OfsResponse response) {
+
+        int equalsIndex = fieldEntry.indexOf('=');
+        if (equalsIndex == -1) {
+            return;
+        }
+
+        String fieldNameWithIndices = fieldEntry.substring(0, equalsIndex);
+        String value = fieldEntry.substring(equalsIndex + 1);
+
+        if (value.startsWith("\"") && value.endsWith("\"")) {
+            value = value.substring(1, value.length() - 1);
+        }
+
+        String[] parts = fieldNameWithIndices.split(":");
+        if (parts.length < 3) {
+            return;
+        }
+
+        String fieldName = parts[0];
+        int multiIndex = Integer.parseInt(parts[1]);
+
+        List<OfsField> ofsFields = response.getFields().get(fieldName);
+        if (ofsFields == null) {
+            ofsFields = new ArrayList<>();
+            response.getFields().put(fieldName, ofsFields);
+        }
+
+        OfsField ofsField;
+        if (ofsFields.isEmpty()) {
+            ofsField = new OfsField();
+            ofsFields.add(ofsField);
+        } else {
+            ofsField = ofsFields.get(0);
+        }
+
+        List<String> multiValues = ofsField.getMultiValues();
+
+        while (multiValues.size() < multiIndex) {
+            multiValues.add("");
+        }
+
+        multiValues.set(multiIndex - 1, value);
+
+        ofsField.setMultiValues(multiValues);
+    }
 }
