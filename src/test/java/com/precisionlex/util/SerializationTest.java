@@ -1,7 +1,7 @@
 package com.precisionlex.util;
 
 import com.precisionlex.OfsObjectMapper;
-import com.precisionlex.OfsRequest;
+import com.precisionlex.OfsTransactionRequest;
 import com.precisionlex.enums.Function;
 import com.precisionlex.enums.ProcessingFlag;
 import com.precisionlex.enums.RequestType;
@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class SerializationTest {
 
     @Test
-    void testSerialization() {
+    void testTransactionSerialization() {
 
-        OfsRequest request = new OfsRequest();
+        OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("FUNDS.TRANSFER");
         request.setVersion("CREATE");
         request.setRequestType(RequestType.TRANSACTION);

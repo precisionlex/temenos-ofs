@@ -7,7 +7,7 @@ import com.precisionlex.enums.RequestType;
 import java.util.List;
 import java.util.Map;
 
-public class OfsRequest {
+public class OfsTransactionRequest {
 
     private String application;
     private String version;
@@ -21,7 +21,7 @@ public class OfsRequest {
     private String recordId;
     private Map<String, List<OfsField>> fields;
 
-    public OfsRequest() { this.fields = new java.util.LinkedHashMap<>(); }
+    public OfsTransactionRequest() { this.fields = new java.util.LinkedHashMap<>(); }
 
     public String getApplication() {
         return application;

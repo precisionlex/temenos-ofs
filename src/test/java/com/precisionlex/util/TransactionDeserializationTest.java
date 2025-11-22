@@ -1,14 +1,14 @@
 package com.precisionlex.util;
 
 import com.precisionlex.OfsObjectMapper;
-import com.precisionlex.OfsResponse;
+import com.precisionlex.OfsTransactionResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DeserializationTest {
+class TransactionDeserializationTest {
 
     @Test
     void testDeserializationValidResponse() {
@@ -29,7 +29,7 @@ class DeserializationTest {
                 + "DEPT.CODE:1:1=1";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         assertEquals("17000000426", response.getRecordId());
         assertEquals("BNXVIB253211625630142.00", response.getTransactionRef());
@@ -55,7 +55,7 @@ class DeserializationTest {
                 + "CUSTOMER:1:1=INVALID CUSTOMER FOR MASTER ACCOUNT";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         assertEquals("17000000426", response.getRecordId());
         assertEquals("BNXVIB253211625630096.00", response.getTransactionRef());
@@ -78,7 +78,7 @@ class DeserializationTest {
                 + "STATUS:1:1=OPEN";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Header should parse correctly regardless of field order
         assertEquals("17000000426", response.getRecordId());
@@ -101,7 +101,7 @@ class DeserializationTest {
                 + "CUSTOMER:1:1=100123";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Header should parse correctly
         assertEquals("17000000426", response.getRecordId());
@@ -125,7 +125,7 @@ class DeserializationTest {
         String ofsResponse = "17000000426/BNXVIB253211625630142.00/1";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Header should parse correctly
         assertEquals("17000000426", response.getRecordId());
@@ -150,7 +150,7 @@ class DeserializationTest {
                 + "FIELD.B:3:1=B3";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Multi-values should be grouped correctly by field name
         List<String> fieldAValues = response.getFields().get("FIELD.A").get(0).getMultiValues();
@@ -175,7 +175,7 @@ class DeserializationTest {
                 + "FIELD.A:5:1=Value5";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Should handle sparse indices with empty strings for gaps
         List<String> fieldValues = response.getFields().get("FIELD.A").get(0).getMultiValues();
@@ -196,7 +196,7 @@ class DeserializationTest {
                 + "FIELD.C:1:1=ActualValue";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Empty values should be preserved
         assertEquals("", response.getFields().get("FIELD.A").get(0).getSimpleValue());
@@ -213,7 +213,7 @@ class DeserializationTest {
                 + "FIELD.C:1:1=\"Value:with:colons\"";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsResponse response = mapper.readValue(ofsResponse, OfsResponse.class);
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Special characters should be preserved (quotes removed)
         assertEquals("Value with spaces", response.getFields().get("FIELD.A").get(0).getSimpleValue());
@@ -221,3 +221,4 @@ class DeserializationTest {
         assertEquals("Value:with:colons", response.getFields().get("FIELD.C").get(0).getSimpleValue());
     }
 }
+

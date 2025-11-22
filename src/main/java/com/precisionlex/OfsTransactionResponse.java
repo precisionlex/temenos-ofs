@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class OfsResponse {
+public class OfsTransactionResponse {
 
     private String recordId;
 
@@ -17,7 +17,7 @@ public class OfsResponse {
 
     private Map<String, List<OfsField>> fields;
 
-    public OfsResponse() {
+    public OfsTransactionResponse() {
         this.fields = new LinkedHashMap<>();
     }
 
@@ -93,7 +93,7 @@ public class OfsResponse {
 
     @Override
     public String toString() {
-        return "OfsResponse{" +
+        return "OfsTransactionResponse{" +
                 "recordId='" + recordId + '\'' +
                 ", transactionRef='" + transactionRef + '\'' +
                 ", status='" + status + '\'' +
