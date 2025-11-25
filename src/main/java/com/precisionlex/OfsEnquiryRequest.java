@@ -11,7 +11,7 @@ public class OfsEnquiryRequest {
     private String password;
     private String company;
     private String enquiryId;
-    private List<SelectionCriteria> selectionCriteria;
+    private List<OfsEnquirySelectionCriteria> selectionCriteria;
 
     public OfsEnquiryRequest() {
         this.selectionCriteria = new ArrayList<>();
@@ -65,63 +65,20 @@ public class OfsEnquiryRequest {
         this.enquiryId = enquiryId;
     }
 
-    public List<SelectionCriteria> getSelectionCriteria() {
+    public List<OfsEnquirySelectionCriteria> getSelectionCriteria() {
         return selectionCriteria;
     }
 
-    public void setSelectionCriteria(List<SelectionCriteria> selectionCriteria) {
+    public void setSelectionCriteria(List<OfsEnquirySelectionCriteria> selectionCriteria) {
         this.selectionCriteria = selectionCriteria;
     }
 
     public void addSelectionCriteria(String field, String operand, String criteria) {
-        this.selectionCriteria.add(new SelectionCriteria(field, operand, criteria));
+        this.selectionCriteria.add(new OfsEnquirySelectionCriteria(field, operand, criteria));
     }
 
-    public void addSelectionCriteria(SelectionCriteria criteria) {
+    public void addSelectionCriteria(OfsEnquirySelectionCriteria criteria) {
         this.selectionCriteria.add(criteria);
-    }
-
-    public static class SelectionCriteria {
-        private String field;
-        private String operand;  // EQ, NE, GE, GT, LE, LT, UL, LK, NR
-        private String criteria;
-
-        public SelectionCriteria() {}
-
-        public SelectionCriteria(String field, String operand, String criteria) {
-            this.field = field;
-            this.operand = operand;
-            this.criteria = criteria;
-        }
-
-        public String getField() {
-            return field;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
-
-        public String getOperand() {
-            return operand;
-        }
-
-        public void setOperand(String operand) {
-            this.operand = operand;
-        }
-
-        public String getCriteria() {
-            return criteria;
-        }
-
-        public void setCriteria(String criteria) {
-            this.criteria = criteria;
-        }
-
-        @Override
-        public String toString() {
-            return field + ":" + operand + "=" + criteria;
-        }
     }
 }
 

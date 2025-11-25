@@ -96,7 +96,7 @@ public class OfsObjectMapper {
 
         if (request.getSelectionCriteria() != null && !request.getSelectionCriteria().isEmpty()) {
             List<String> criteriaStrings = new ArrayList<>();
-            for (OfsEnquiryRequest.SelectionCriteria criteria : request.getSelectionCriteria()) {
+            for (OfsEnquirySelectionCriteria criteria : request.getSelectionCriteria()) {
                 criteriaStrings.add(criteria.toString());
             }
             ofs.append(String.join(",", criteriaStrings));
@@ -400,7 +400,7 @@ public class OfsObjectMapper {
             }
         }
 
-        if (current.length() > 0) {
+        if (!current.isEmpty()) {
             rows.add(current.toString());
         }
 
@@ -435,7 +435,7 @@ public class OfsObjectMapper {
                 }
             }
 
-            if (current.length() > 0) {
+            if (!current.isEmpty()) {
                 values.add(current.toString());
             }
         }

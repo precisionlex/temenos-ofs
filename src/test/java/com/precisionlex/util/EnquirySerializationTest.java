@@ -16,12 +16,12 @@ class EnquirySerializationTest {
         request.setPassword("654321");
         request.setCompany("");
         request.setEnquiryId("CURRENCY-LIST");
-        request.addSelectionCriteria("@ID", "LK", "C");
+        request.addSelectionCriteria("@ID", "LK", "C...");
 
         OfsObjectMapper mapper = new OfsObjectMapper();
         String ofsRequestString = mapper.writeValueAsString(request);
 
-        String expectedResult = "ENQUIRY.SELECT,,TEST.USER/654321/,CURRENCY-LIST,@ID:LK=C";
+        String expectedResult = "ENQUIRY.SELECT,,TEST.USER/654321/,CURRENCY-LIST,@ID:LK=C...";
 
         assertEquals(expectedResult, ofsRequestString);
     }

@@ -12,8 +12,8 @@ class EnquiryDeserializationTest {
 
     @Test
     void testEnquiryDeserializationSuccess() {
-        // Example from enquiries.tx: ,@ID::Key/CCY.NAME::Name,"CAD"  "CANADIAN DOLLAR","CHF" "SWISS FRANCS"
-        String ofsResponse = ",@ID::Key/CCY.NAME::Name,\"CAD\"\t\"CANADIAN DOLLAR\",\"CHF\"\t\"SWISS FRANCS\"";
+
+        String ofsResponse = ",@ID::Ccy/CCY.NAME::Currency Name,\"CAD\"\t\"CANADIAN DOLLAR\",\"CHF\"\t\"SWISS FRANCS\"";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
         OfsEnquiryResponse response = mapper.readEnquiryResponse(ofsResponse);
@@ -24,9 +24,9 @@ class EnquiryDeserializationTest {
         // Check columns
         assertEquals(2, response.getColumnCount());
         assertEquals("@ID", response.getColumns().get(0).getIdentifier());
-        assertEquals("Key", response.getColumns().get(0).getLabel());
+        assertEquals("Ccy", response.getColumns().get(0).getLabel());
         assertEquals("CCY.NAME", response.getColumns().get(1).getIdentifier());
-        assertEquals("Name", response.getColumns().get(1).getLabel());
+        assertEquals("Currency Name", response.getColumns().get(1).getLabel());
 
         // Check rows
         assertEquals(2, response.getRowCount());
