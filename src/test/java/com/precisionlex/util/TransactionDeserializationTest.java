@@ -12,33 +12,33 @@ class TransactionDeserializationTest {
 
     @Test
     void testDeserializationValidResponse() {
-        String ofsResponse = "17000000426/BNXVIB253211625630142.00/1,"
+        String ofsResponse = "ACC1000001/TXN202501170001.00/1,"
                 + "MASTER.ACCOUNT:1:1=1000000098,"
                 + "CUSTOMER:1:1=100123,"
-                + "VIBAN:1:1=LT743420017000000426,"
+                + "ACCOUNT.NUMBER:1:1=ACC1000001,"
                 + "CURRENCY:1:1=EUR,"
                 + "STATUS:1:1=OPEN,"
                 + "RESTRICTED:1:1=N,"
                 + "CREATED.DATE:1:1=20250308,"
                 + "CURR.NO:1:1=1,"
-                + "INPUTTER:1:1=16256_GTUSER_I_INAU_OFS_BNX.VIBAN.PREAUTH,"
+                + "INPUTTER:1:1=USER123_I_INAU_OFS_SYSTEM,"
                 + "DATE.TIME:1:1=2511170822,"
                 + "DATE.TIME:2:1=2511170822,"
-                + "AUTHORISER:1:1=16256_GTUSER_OFS_BNX.VIBAN.PREAUTH,"
-                + "CO.CODE:1:1=LT0010001,"
+                + "AUTHORISER:1:1=USER456_OFS_SYSTEM,"
+                + "CO.CODE:1:1=GB0010001,"
                 + "DEPT.CODE:1:1=1";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
         OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
-        assertEquals("17000000426", response.getRecordId());
-        assertEquals("BNXVIB253211625630142.00", response.getTransactionRef());
+        assertEquals("ACC1000001", response.getRecordId());
+        assertEquals("TXN202501170001.00", response.getTransactionRef());
         assertEquals("1", response.getStatus());
         assertTrue(response.isSuccess());
 
         assertEquals("1000000098", response.getFields().get("MASTER.ACCOUNT").get(0).getSimpleValue());
         assertEquals("100123", response.getFields().get("CUSTOMER").get(0).getSimpleValue());
-        assertEquals("LT743420017000000426", response.getFields().get("VIBAN").get(0).getSimpleValue());
+        assertEquals("ACC1000001", response.getFields().get("ACCOUNT.NUMBER").get(0).getSimpleValue());
         assertEquals("EUR", response.getFields().get("CURRENCY").get(0).getSimpleValue());
         assertEquals("OPEN", response.getFields().get("STATUS").get(0).getSimpleValue());
         assertEquals("N", response.getFields().get("RESTRICTED").get(0).getSimpleValue());
@@ -51,14 +51,14 @@ class TransactionDeserializationTest {
 
     @Test
     void testDeserializationErrorResponse() {
-        String ofsResponse = "17000000426/BNXVIB253211625630096.00/-1/NO,"
+        String ofsResponse = "ACC1000002/TXN202501170002.00/-1/NO,"
                 + "CUSTOMER:1:1=INVALID CUSTOMER FOR MASTER ACCOUNT";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
         OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
-        assertEquals("17000000426", response.getRecordId());
-        assertEquals("BNXVIB253211625630096.00", response.getTransactionRef());
+        assertEquals("ACC1000002", response.getRecordId());
+        assertEquals("TXN202501170002.00", response.getTransactionRef());
         assertEquals("-1", response.getStatus());
         assertEquals("NO", response.getErrorCode());
         assertTrue(response.isError());
@@ -70,10 +70,10 @@ class TransactionDeserializationTest {
     @Test
     void testDeserializationWithDifferentFieldOrder() {
         // Fields in completely different order than first test
-        String ofsResponse = "17000000426/BNXVIB253211625630142.00/1,"
+        String ofsResponse = "ACC1000003/TXN202501170003.00/1,"
                 + "CURRENCY:1:1=EUR,"
                 + "CUSTOMER:1:1=100123,"
-                + "VIBAN:1:1=LT743420017000000426,"
+                + "ACCOUNT.NUMBER:1:1=ACC1000003,"
                 + "MASTER.ACCOUNT:1:1=1000000098,"
                 + "STATUS:1:1=OPEN";
 
@@ -81,15 +81,15 @@ class TransactionDeserializationTest {
         OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Header should parse correctly regardless of field order
-        assertEquals("17000000426", response.getRecordId());
-        assertEquals("BNXVIB253211625630142.00", response.getTransactionRef());
+        assertEquals("ACC1000003", response.getRecordId());
+        assertEquals("TXN202501170003.00", response.getTransactionRef());
         assertEquals("1", response.getStatus());
         assertTrue(response.isSuccess());
 
         // Fields should be accessible regardless of order
         assertEquals("1000000098", response.getFields().get("MASTER.ACCOUNT").get(0).getSimpleValue());
         assertEquals("100123", response.getFields().get("CUSTOMER").get(0).getSimpleValue());
-        assertEquals("LT743420017000000426", response.getFields().get("VIBAN").get(0).getSimpleValue());
+        assertEquals("ACC1000003", response.getFields().get("ACCOUNT.NUMBER").get(0).getSimpleValue());
         assertEquals("EUR", response.getFields().get("CURRENCY").get(0).getSimpleValue());
         assertEquals("OPEN", response.getFields().get("STATUS").get(0).getSimpleValue());
     }
@@ -97,15 +97,15 @@ class TransactionDeserializationTest {
     @Test
     void testDeserializationWithMissingOptionalFields() {
         // Minimal response with only required fields
-        String ofsResponse = "17000000426/BNXVIB253211625630142.00/1,"
+        String ofsResponse = "ACC1000004/TXN202501170004.00/1,"
                 + "CUSTOMER:1:1=100123";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
         OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Header should parse correctly
-        assertEquals("17000000426", response.getRecordId());
-        assertEquals("BNXVIB253211625630142.00", response.getTransactionRef());
+        assertEquals("ACC1000004", response.getRecordId());
+        assertEquals("TXN202501170004.00", response.getTransactionRef());
         assertEquals("1", response.getStatus());
         assertNull(response.getErrorCode()); // Optional, should be null
         assertTrue(response.isSuccess());
@@ -116,20 +116,20 @@ class TransactionDeserializationTest {
         // Other fields should not exist
         assertNull(response.getFields().get("MASTER.ACCOUNT"));
         assertNull(response.getFields().get("CURRENCY"));
-        assertNull(response.getFields().get("VIBAN"));
+        assertNull(response.getFields().get("ACCOUNT.NUMBER"));
     }
 
     @Test
     void testDeserializationWithOnlyHeader() {
         // Response with header but no fields
-        String ofsResponse = "17000000426/BNXVIB253211625630142.00/1";
+        String ofsResponse = "ACC1000005/TXN202501170005.00/1";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
         OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
         // Header should parse correctly
-        assertEquals("17000000426", response.getRecordId());
-        assertEquals("BNXVIB253211625630142.00", response.getTransactionRef());
+        assertEquals("ACC1000005", response.getRecordId());
+        assertEquals("TXN202501170005.00", response.getTransactionRef());
         assertEquals("1", response.getStatus());
         assertNull(response.getErrorCode());
         assertTrue(response.isSuccess());
@@ -141,7 +141,7 @@ class TransactionDeserializationTest {
     @Test
     void testDeserializationWithMultipleMultiValueFields() {
         // Multiple fields with multi-values in mixed order
-        String ofsResponse = "17000000426/TEST123/1,"
+        String ofsResponse = "ACC1000006/TXN202501170006.00/1,"
                 + "FIELD.A:1:1=A1,"
                 + "FIELD.B:1:1=B1,"
                 + "FIELD.A:2:1=A2,"
@@ -169,7 +169,7 @@ class TransactionDeserializationTest {
     @Test
     void testDeserializationWithSparseMultiValueIndices() {
         // Multi-values with gaps (indices 1, 3, 5 - missing 2, 4)
-        String ofsResponse = "17000000426/TEST123/1,"
+        String ofsResponse = "ACC1000007/TXN202501170007.00/1,"
                 + "FIELD.A:1:1=Value1,"
                 + "FIELD.A:3:1=Value3,"
                 + "FIELD.A:5:1=Value5";
@@ -190,7 +190,7 @@ class TransactionDeserializationTest {
     @Test
     void testDeserializationWithEmptyValues() {
         // Fields with empty values
-        String ofsResponse = "17000000426/TEST123/1,"
+        String ofsResponse = "ACC1000008/TXN202501170008.00/1,"
                 + "FIELD.A:1:1=,"
                 + "FIELD.B:1:1=\"\","
                 + "FIELD.C:1:1=ActualValue";
@@ -207,7 +207,7 @@ class TransactionDeserializationTest {
     @Test
     void testDeserializationWithSpecialCharactersInValues() {
         // Values with special characters
-        String ofsResponse = "17000000426/TEST123/1,"
+        String ofsResponse = "ACC1000009/TXN202501170009.00/1,"
                 + "FIELD.A:1:1=\"Value with spaces\","
                 + "FIELD.B:1:1=\"Value/with/slashes\","
                 + "FIELD.C:1:1=\"Value:with:colons\"";

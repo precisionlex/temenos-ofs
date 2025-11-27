@@ -1,5 +1,7 @@
 package com.precisionlex;
 
+import com.precisionlex.enums.SelectionOperand;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +76,10 @@ public class OfsEnquiryRequest {
     }
 
     public void addSelectionCriteria(String field, String operand, String criteria) {
+        this.selectionCriteria.add(new OfsEnquirySelectionCriteria(field, operand, criteria));
+    }
+
+    public void addSelectionCriteria(String field, SelectionOperand operand, String criteria) {
         this.selectionCriteria.add(new OfsEnquirySelectionCriteria(field, operand, criteria));
     }
 

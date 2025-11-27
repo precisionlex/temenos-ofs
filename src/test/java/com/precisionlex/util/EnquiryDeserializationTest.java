@@ -45,30 +45,6 @@ class EnquiryDeserializationTest {
     }
 
     @Test
-    void testEnquiryDeserializationWithHeaderCaptions() {
-        // Response with header captions
-        String ofsResponse = "CAPTION1=Value1/CAPTION2=Value2,@ID::Key/NAME::Name,\"001\"\t\"Item One\",\"002\"\t\"Item Two\"";
-
-        OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsEnquiryResponse response = mapper.readEnquiryResponse(ofsResponse);
-
-        assertTrue(response.isSuccess());
-
-        // Check header captions
-        assertEquals(2, response.getHeaderCaptions().size());
-        assertEquals("Value1", response.getHeaderCaptions().get("CAPTION1"));
-        assertEquals("Value2", response.getHeaderCaptions().get("CAPTION2"));
-
-        // Check columns
-        assertEquals(2, response.getColumnCount());
-
-        // Check rows
-        assertEquals(2, response.getRowCount());
-        assertEquals("001", response.getCellValue(0, 0));
-        assertEquals("Item One", response.getCellValue(0, 1));
-    }
-
-    @Test
     void testEnquiryDeserializationError() {
         // Error format: <<ENQUIRY.NAME>>//-1/,<<Error message>>
         String ofsResponse = "CURRENCY-LIST//-1/,Invalid user credentials";

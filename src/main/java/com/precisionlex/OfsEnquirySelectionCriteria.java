@@ -1,15 +1,23 @@
 package com.precisionlex;
 
+import com.precisionlex.enums.SelectionOperand;
+
 public class OfsEnquirySelectionCriteria {
     private String field;
-    private String operand;  // EQ, NE, GE, GT, LE, LT, UL, LK, NR
+    private SelectionOperand operand;
     private String criteria;
 
     public OfsEnquirySelectionCriteria() {}
 
-    public OfsEnquirySelectionCriteria(String field, String operand, String criteria) {
+    public OfsEnquirySelectionCriteria(String field, SelectionOperand operand, String criteria) {
         this.field = field;
         this.operand = operand;
+        this.criteria = criteria;
+    }
+
+    public OfsEnquirySelectionCriteria(String field, String operand, String criteria) {
+        this.field = field;
+        this.operand = SelectionOperand.fromCode(operand);
         this.criteria = criteria;
     }
 
@@ -21,13 +29,11 @@ public class OfsEnquirySelectionCriteria {
         this.field = field;
     }
 
-    public String getOperand() {
-        return operand;
-    }
+    public SelectionOperand getOperand() { return operand; }
 
-    public void setOperand(String operand) {
-        this.operand = operand;
-    }
+    public void setOperand(SelectionOperand operand) { this.operand = operand; }
+
+    public void setOperand(String operand) {this.operand = SelectionOperand.fromCode(operand);}
 
     public String getCriteria() {
         return criteria;
@@ -38,8 +44,6 @@ public class OfsEnquirySelectionCriteria {
     }
 
     @Override
-    public String toString() {
-        return field + ":" + operand + "=" + criteria;
-    }
+    public String toString() {return field + ":" + operand.getCode() + "=" + criteria;}
 }
 
