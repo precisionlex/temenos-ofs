@@ -1,9 +1,13 @@
 package com.precisionlex;
 
+import com.precisionlex.enums.Function;
+import com.precisionlex.enums.ProcessingFlag;
+import com.precisionlex.enums.RequestType;
+
 import java.util.List;
 import java.util.Map;
 
-public class OfsRequest {
+public class OfsTransactionRequest {
 
     private String application;
     private String version;
@@ -17,9 +21,7 @@ public class OfsRequest {
     private String recordId;
     private Map<String, List<OfsField>> fields;
 
-    public OfsRequest() {
-        this.fields = new java.util.HashMap<>();
-    }
+    public OfsTransactionRequest() { this.fields = new java.util.LinkedHashMap<>(); }
 
     public String getApplication() {
         return application;
@@ -45,6 +47,10 @@ public class OfsRequest {
         this.requestType = requestType;
     }
 
+    public void setRequestType(RequestType requestType) {
+        this.requestType = requestType.getValue();
+    }
+
     public String getFunction() {
         return function;
     }
@@ -53,12 +59,20 @@ public class OfsRequest {
         this.function = function;
     }
 
+    public void setFunction(Function function) {
+        this.function = function.getValue();
+    }
+
     public String getProcessingFlag() {
         return processingFlag;
     }
 
     public void setProcessingFlag(String processingFlag) {
         this.processingFlag = processingFlag;
+    }
+
+    public void setProcessingFlag(ProcessingFlag processingFlag) {
+        this.processingFlag = processingFlag.getValue();
     }
 
     public String getOptions() {

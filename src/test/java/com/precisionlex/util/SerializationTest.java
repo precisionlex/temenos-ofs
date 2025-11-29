@@ -1,21 +1,24 @@
 package com.precisionlex.util;
 
 import com.precisionlex.OfsObjectMapper;
-import com.precisionlex.OfsRequest;
+import com.precisionlex.OfsTransactionRequest;
+import com.precisionlex.enums.Function;
+import com.precisionlex.enums.ProcessingFlag;
+import com.precisionlex.enums.RequestType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SerializationTest {
 
     @Test
-    void testSerialization() {
+    void testTransactionSerialization() {
 
-        OfsRequest request = new OfsRequest();
+        OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("FUNDS.TRANSFER");
         request.setVersion("CREATE");
-        request.setRequestType("Transaction");  //TODO: change to enum (initially supported only Transaction and Enquiry)
-        request.setFunction("I"); //TODO: change to enum (Inpunt = I, Authorise = A, Delete = D, Reverse = R)
-        request.setProcessingFlag("PROCESS"); //TODO: change to enum (PROCESS, VALIDATE)
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setFunction(Function.INPUT);
+        request.setProcessingFlag(ProcessingFlag.PROCESS);
         request.setUserId("INPUTTER");
         request.setPassword("123456");
         request.setCompany("GB0010001");

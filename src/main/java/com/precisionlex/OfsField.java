@@ -3,12 +3,6 @@ package com.precisionlex;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Represents a Temenos Transact T24 field that can contain:
- * - Simple value (String)
- * - Multi-values (List<String>)
- * - Sub-values (List<List<String>>)
- */
 public class OfsField {
     private List<List<String>> data;
 
@@ -31,7 +25,6 @@ public class OfsField {
         this.data = new ArrayList<>(subValues);
     }
 
-    // Simple value methods (single value)
     public void setSimpleValue(String value) {
         this.data.clear();
         List<String> singleValue = new ArrayList<>();
@@ -46,7 +39,6 @@ public class OfsField {
         return data.get(0).get(0);
     }
 
-    // Multi-value methods (list of values)
     public void setMultiValues(List<String> values) {
         this.data.clear();
         for (String value : values) {
@@ -66,7 +58,6 @@ public class OfsField {
         return result;
     }
 
-    // Sub-value methods (list of lists)
     public void setSubValues(List<List<String>> subValues) {
         this.data = new ArrayList<>(subValues);
     }
@@ -75,7 +66,6 @@ public class OfsField {
         return new ArrayList<>(data);
     }
 
-    // Utility methods
     public boolean isEmpty() {
         return data.isEmpty();
     }
