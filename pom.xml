@@ -28,6 +28,23 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>sandijs</id>
+            <name>Sandijs Mednis</name>
+            <email>sandijs@precisionlex.com</email>
+            <organization>PrecisionLex</organization>
+            <organizationUrl>https://precisionlex.com</organizationUrl>
+        </developer>
+        <developer>
+            <id>davis</id>
+            <name>Davis Romanovskis</name>
+            <email>davis.romanovskis@precisionlex.com</email>
+            <organization>PrecisionLex</organization>
+            <organizationUrl>https://precisionlex.com</organizationUrl>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:git://github.com/precisionlex/temenos-ofs.git</connection>
         <developerConnection>scm:git:ssh://github.com:precisionlex/temenos-ofs.git</developerConnection>
