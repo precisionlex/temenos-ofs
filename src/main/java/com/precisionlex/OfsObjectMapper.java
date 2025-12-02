@@ -4,10 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Mapper for serializing and deserializing Temenos OFS (Open Financial Services) messages.
+ * <p>
+ * This class provides methods to convert between Java objects and OFS string format for both
+ * transaction requests/responses and enquiry requests/responses. It handles the specific
+ * formatting requirements of the Temenos T24 OFS protocol.
+ * </p>
+ *
+ * @author PrecisionLex
+ * @version 1.0.0
+ */
 public class OfsObjectMapper {
 
-    // Transaction Request Serialization
-
+    /**
+     * Serializes an OFS transaction request object into an OFS-formatted string.
+     * <p>
+     * The output format follows the pattern:
+     * {@code APPLICATION,VERSION/FUNCTION/PROCESSING_FLAG,USER/PASSWORD/COMPANY,RECORD_ID,FIELDS}
+     * </p>
+     *
+     * @param request the transaction request object to serialize
+     * @return the OFS-formatted string representation of the request
+     */
     public String writeValueAsString(OfsTransactionRequest request) {
 
         StringBuilder ofs = new StringBuilder();
@@ -59,8 +78,16 @@ public class OfsObjectMapper {
         return ofs.toString();
     }
 
-    // Enquiry Request Serialization
-
+    /**
+     * Serializes an OFS enquiry request object into an OFS-formatted string.
+     * <p>
+     * The output format follows the pattern:
+     * {@code OPERATION,OPTIONS,USER/PASSWORD/COMPANY,ENQUIRY_ID,SELECTION_CRITERIA}
+     * </p>
+     *
+     * @param request the enquiry request object to serialize
+     * @return the OFS-formatted string representation of the enquiry request
+     */
     public String writeValueAsString(OfsEnquiryRequest request) {
         StringBuilder ofs = new StringBuilder();
 
@@ -132,8 +159,17 @@ public class OfsObjectMapper {
         return String.join(",", serializedFields);
     }
 
-    // Transaction Response Deserialization
-
+    /**
+     * Deserializes an OFS-formatted transaction response string into an OfsTransactionResponse object.
+     * <p>
+     * The expected format is: {@code RECORD_ID/TRANSACTION_REF/STATUS/ERROR_CODE,FIELDS}
+     * where the header contains the response metadata and the optional fields section contains
+     * the field values in the format {@code FIELD_NAME:MULTI_INDEX:SUB_INDEX="VALUE"}.
+     * </p>
+     *
+     * @param ofsResponseString the OFS-formatted response string to deserialize
+     * @return the deserialized OfsTransactionResponse object
+     */
     public OfsTransactionResponse readTransactionResponse(String ofsResponseString) {
         OfsTransactionResponse response = new OfsTransactionResponse();
 
@@ -237,8 +273,17 @@ public class OfsObjectMapper {
         ofsField.setMultiValues(multiValues);
     }
 
-    // Enquiry Response Deserialization
-
+    /**
+     * Deserializes an OFS-formatted enquiry response string into an OfsEnquiryResponse object.
+     * <p>
+     * Parses the enquiry response which consists of three main sections separated by commas:
+     * header captions, column definitions, and row data. Handles error responses in the format
+     * {@code ENQUIRY_NAME//-1/,ERROR_MESSAGE}.
+     * </p>
+     *
+     * @param ofsResponseString the OFS-formatted enquiry response string to deserialize
+     * @return the deserialized OfsEnquiryResponse object
+     */
     public OfsEnquiryResponse readEnquiryResponse(String ofsResponseString) {
         OfsEnquiryResponse response = new OfsEnquiryResponse();
 
