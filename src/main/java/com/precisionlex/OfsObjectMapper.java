@@ -49,20 +49,32 @@ public class OfsObjectMapper {
         if (request.getProcessingFlag() != null) {
             ofs.append(request.getProcessingFlag());
         }
+
+        if (request.getAuthorisers() != null) {
+            ofs.append("/");
+            ofs.append("/");
+            ofs.append(request.getAuthorisers());
+        }
+
         ofs.append(",");
 
-        if (request.getUserId() != null) {
-            ofs.append(request.getUserId());
-        }
-        ofs.append("/");
+        // Only add user info section if at least one field is provided
+        boolean hasUserInfo = request.getUserId() != null || request.getPassword() != null || request.getCompany() != null;
 
-        if (request.getPassword() != null) {
-            ofs.append(request.getPassword());
-        }
-        ofs.append("/");
+        if (hasUserInfo) {
+            if (request.getUserId() != null) {
+                ofs.append(request.getUserId());
+            }
+            ofs.append("/");
 
-        if (request.getCompany() != null) {
-            ofs.append(request.getCompany());
+            if (request.getPassword() != null) {
+                ofs.append(request.getPassword());
+            }
+            ofs.append("/");
+
+            if (request.getCompany() != null) {
+                ofs.append(request.getCompany());
+            }
         }
         ofs.append(",");
 

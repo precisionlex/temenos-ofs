@@ -15,6 +15,7 @@ public class OfsTransactionRequest {
     private String function;
     private String processingFlag;
     private String options;
+    private Integer authorisers;
     private String userId;
     private String password;
     private String company;
@@ -49,6 +50,15 @@ public class OfsTransactionRequest {
 
     public void setRequestType(RequestType requestType) {
         this.requestType = requestType.getValue();
+        // Set defaults for TRANSACTION type
+        if (requestType == RequestType.TRANSACTION) {
+            if (this.function == null) {
+                this.function = Function.INPUT.getValue();
+            }
+            if (this.processingFlag == null) {
+                this.processingFlag = ProcessingFlag.PROCESS.getValue();
+            }
+        }
     }
 
     public String getFunction() {
@@ -81,6 +91,14 @@ public class OfsTransactionRequest {
 
     public void setOptions(String options) {
         this.options = options;
+    }
+
+    public Integer getAuthorisers() {
+        return authorisers;
+    }
+
+    public void setAuthorisers(Integer authorisers) {
+        this.authorisers = authorisers;
     }
 
     public String getUserId() {
