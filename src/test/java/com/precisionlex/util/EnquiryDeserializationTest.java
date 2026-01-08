@@ -177,5 +177,22 @@ class EnquiryDeserializationTest {
         assertEquals(2, response.getColumnIndex("VALUE"));
         assertEquals(-1, response.getColumnIndex("NONEXISTENT"));
     }
+
+    @Test
+    void testEnquiryDeserializationWithExtendedFieldDefinition() {
+        String ofsResponse = ",ID::stmtEntryId/VIBAN:ALPHANUMERIC:viban,\"12345\"\t\"LT000000000000000000\"";
+
+        OfsObjectMapper mapper = new OfsObjectMapper();
+        OfsEnquiryResponse response = mapper.readEnquiryResponse(ofsResponse);
+
+        assertTrue(response.isSuccess());
+        assertEquals(2, response.getColumnCount());
+
+        assertEquals("VIBAN", response.getColumns().get(1).getIdentifier());
+
+        assertEquals("viban", response.getColumns().get(1).getLabel());
+
+        assertEquals("LT000000000000000000", response.getCellValue(0, "VIBAN"));
+    }
 }
 
