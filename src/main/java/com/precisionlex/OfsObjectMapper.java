@@ -391,18 +391,29 @@ public class OfsObjectMapper {
                 continue;
             }
 
-            String[] parts = columnDef.split("::", 2);
+            String[] parts = columnDef.split(":");
+
+            String identifier = "";
+            String formatType = "";
+            String label = "";
+
             if (parts.length >= 1) {
-                String identifier = parts[0].trim();
-                String formatType = "";
-                String label = "";
-
-                if (parts.length == 2) {
-                    label = parts[1].trim();
-                }
-
-                response.addColumn(identifier, formatType, label);
+                identifier = parts[0].trim();
             }
+
+            if (parts.length >= 3) {
+                formatType = parts[1].trim();
+                label = parts[2].trim();
+            }
+            else if (parts.length == 2) {
+                label = parts[1].trim();
+            }
+
+            if (label.isEmpty()) {
+                label = identifier;
+            }
+
+            response.addColumn(identifier, formatType, label);
         }
     }
 

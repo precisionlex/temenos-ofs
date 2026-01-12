@@ -105,7 +105,7 @@ class EnquiryDeserializationTest {
     @Test
     void testEnquiryDeserializationWithMultipleColumns() {
         // Test with more columns
-        String ofsResponse = ",ID::ID/NAME::Name/TYPE::Type/STATUS::Status," +
+        String ofsResponse = ",ID::ID/NAME::Name/TYPE::Type/STATUS:ALPHANUMERIC:Status," +
                 "\"001\"\t\"Customer 1\"\t\"INDIVIDUAL\"\t\"ACTIVE\"," +
                 "\"002\"\t\"Customer 2\"\t\"CORPORATE\"\t\"INACTIVE\"";
 
@@ -119,7 +119,9 @@ class EnquiryDeserializationTest {
         assertEquals("ID", response.getColumns().get(0).getIdentifier());
         assertEquals("NAME", response.getColumns().get(1).getIdentifier());
         assertEquals("TYPE", response.getColumns().get(2).getIdentifier());
+        assertEquals("", response.getColumns().get(2).getFormatType());
         assertEquals("STATUS", response.getColumns().get(3).getIdentifier());
+        assertEquals("ALPHANUMERIC", response.getColumns().get(3).getFormatType());
 
         // Check rows
         assertEquals(2, response.getRowCount());
@@ -177,5 +179,6 @@ class EnquiryDeserializationTest {
         assertEquals(2, response.getColumnIndex("VALUE"));
         assertEquals(-1, response.getColumnIndex("NONEXISTENT"));
     }
+
 }
 
