@@ -157,10 +157,12 @@ public class OfsObjectMapper {
                 for (int i = 0; i < multiValues.size(); i++) {
                     String value = multiValues.get(i);
 
+                    String sanitizedValue = sanitizeText(value != null ? value : "");
+
                     String serializedField = String.format("%s:%d:1=\"%s\"",
                         fieldName,
                         i + 1,
-                        value != null ? value : ""
+                        sanitizedValue
                     );
 
                     serializedFields.add(serializedField);
@@ -251,6 +253,8 @@ public class OfsObjectMapper {
         if (value.startsWith("\"") && value.endsWith("\"")) {
             value = value.substring(1, value.length() - 1);
         }
+
+        value = desanitizeText(value);
 
         String[] parts = fieldNameWithIndices.split(":");
         if (parts.length < 3) {
@@ -515,6 +519,40 @@ public class OfsObjectMapper {
         if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
             return value.substring(1, value.length() - 1);
         }
+        return value;
+    }
+
+    private String sanitizeText(String value) {
+        if (value == null || value.isEmpty() || "-".equals(value)) {
+            return "NA";
+        }
+
+        value = value.replace("|", "%|%");
+        value = value.replace("\"", "\"|\"");
+        value = value.replace("?", "%?%");
+        value = value.replace(",", "\"?\"");
+        value = value.replace("_", "'_'");
+        value = value.replace("^", "%^%");
+        value = value.replace("/", "\"^\"");
+
+        return value;
+    }
+
+    private String desanitizeText(String sanitizedValue) {
+        if (sanitizedValue == null) {
+            return null;
+        }
+
+        String value = sanitizedValue;
+
+        value = value.replace("\"^\"", "/");
+        value = value.replace("%^%", "^");
+        value = value.replace("'_'", "_");
+        value = value.replace("\"?\"", ",");
+        value = value.replace("%?%", "?");
+        value = value.replace("\"|\"", "\"");
+        value = value.replace("%|%", "|");
+
         return value;
     }
 }

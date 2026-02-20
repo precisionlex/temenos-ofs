@@ -220,5 +220,18 @@ class TransactionDeserializationTest {
         assertEquals("Value/with/slashes", response.getFields().get("FIELD.B").get(0).getSimpleValue());
         assertEquals("Value:with:colons", response.getFields().get("FIELD.C").get(0).getSimpleValue());
     }
-}
 
+    @Test
+    void testDeserializationWithReservedCharacters() {
+        String ofsResponse = "TEST001/TXN001/1,"
+                + "DESCRIPTION:1:1=\"Test%|%pipe\"|\"quote%?%mark\"?\"comma'_'under%^%caret\"^\"slash\","
+                + "NORMAL:1:1=\"Normal text\"";
+
+        OfsObjectMapper mapper = new OfsObjectMapper();
+        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
+
+        assertEquals("Test|pipe\"quote?mark,comma_under^caret/slash",
+                response.getFields().get("DESCRIPTION").get(0).getSimpleValue());
+        assertEquals("Normal text", response.getFields().get("NORMAL").get(0).getSimpleValue());
+    }
+}

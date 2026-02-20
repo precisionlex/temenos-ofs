@@ -2,6 +2,7 @@ package com.precisionlex.util;
 
 import com.precisionlex.OfsObjectMapper;
 import com.precisionlex.OfsTransactionRequest;
+import com.precisionlex.OfsTransactionResponse;
 import com.precisionlex.enums.Function;
 import com.precisionlex.enums.ProcessingFlag;
 import com.precisionlex.enums.RequestType;
@@ -80,4 +81,26 @@ class SerializationTest {
         assertEquals(expectedResult, ofsRequstString);
     }
 
+    @Test
+    void testReservedCharacterSanitization() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("FUNDS.TRANSFER");
+        request.setVersion("TEST");
+        request.setFunction(Function.INPUT);
+        request.setProcessingFlag(ProcessingFlag.PROCESS);
+        request.setRecordId("TEST001");
+
+        request.setField("DESCRIPTION", "Test|pipe\"quote?mark,comma_under^caret/slash");
+        request.setField("DASH.FIELD", "-");
+        request.setField("NORMAL.FIELD", "Normal text");
+
+        OfsObjectMapper mapper = new OfsObjectMapper();
+        String ofsRequestString = mapper.writeValueAsString(request);
+
+        assertTrue(ofsRequestString.contains("Test%|%pipe\"|\"quote%?%mark\"?\"comma'_'under%^%caret\"^\"slash"));
+
+        assertTrue(ofsRequestString.contains("DASH.FIELD:1:1=\"NA\""));
+
+        assertTrue(ofsRequestString.contains("NORMAL.FIELD:1:1=\"Normal text\""));
+    }
 }
