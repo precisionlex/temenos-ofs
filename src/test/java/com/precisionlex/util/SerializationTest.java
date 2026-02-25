@@ -106,7 +106,6 @@ class SerializationTest {
 
     @Test
     void testNADeserialization() {
-        // Test that "NA" in response is converted back to empty string
         String ofsResponse = "TEST001/TXN001/1,"
                 + "FIELD1:1:1=\"NA\","
                 + "FIELD2:1:1=\"Normal text\"";
@@ -114,14 +113,12 @@ class SerializationTest {
         OfsObjectMapper mapper = new OfsObjectMapper();
         OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
-        // "NA" should be deserialized to empty string
         assertEquals("", response.getFields().get("FIELD1").get(0).getSimpleValue());
         assertEquals("Normal text", response.getFields().get("FIELD2").get(0).getSimpleValue());
     }
 
     @Test
     void testEmptyStringRoundTrip() {
-        // Test that empty string serializes to "NA" and deserializes back to empty string
         OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("TEST");
         request.setFunction(Function.INPUT);
@@ -132,24 +129,20 @@ class SerializationTest {
         OfsObjectMapper mapper = new OfsObjectMapper();
         String serialized = mapper.writeValueAsString(request);
 
-        // Empty string should serialize to "NA"
         assertTrue(serialized.contains("EMPTY.FIELD:1:1=\"NA\""));
 
-        // Simulate response from T24
         String mockResponse = "TEST001/TXN001/1,"
                 + "EMPTY.FIELD:1:1=\"NA\","
                 + "NORMAL.FIELD:1:1=\"Value\"";
 
         OfsTransactionResponse response = mapper.readTransactionResponse(mockResponse);
 
-        // "NA" should deserialize back to empty string
         assertEquals("", response.getFields().get("EMPTY.FIELD").get(0).getSimpleValue());
         assertEquals("Value", response.getFields().get("NORMAL.FIELD").get(0).getSimpleValue());
     }
 
     @Test
     void testDashFieldRoundTrip() {
-        // Test that single dash serializes to "NA" and deserializes back to empty string
         OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("TEST");
         request.setFunction(Function.INPUT);
@@ -159,15 +152,12 @@ class SerializationTest {
         OfsObjectMapper mapper = new OfsObjectMapper();
         String serialized = mapper.writeValueAsString(request);
 
-        // Single dash should serialize to "NA"
         assertTrue(serialized.contains("DASH.FIELD:1:1=\"NA\""));
 
-        // Simulate response from T24
         String mockResponse = "TEST001/TXN001/1,DASH.FIELD:1:1=\"NA\"";
 
         OfsTransactionResponse response = mapper.readTransactionResponse(mockResponse);
 
-        // "NA" should deserialize back to empty string (not dash, since dash is for deletion)
         assertEquals("", response.getFields().get("DASH.FIELD").get(0).getSimpleValue());
     }
 }
