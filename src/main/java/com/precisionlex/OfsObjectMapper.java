@@ -543,6 +543,10 @@ public class OfsObjectMapper {
             return null;
         }
 
+        if ("NA".equals(sanitizedValue)) {
+            return "";
+        }
+
         String value = sanitizedValue;
 
         value = value.replace("\"^\"", "/");
