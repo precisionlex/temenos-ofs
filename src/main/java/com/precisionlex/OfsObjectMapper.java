@@ -521,9 +521,6 @@ public class OfsObjectMapper {
     }
 
     private String sanitizeText(String value) {
-        if (value == null || value.isEmpty() || "-".equals(value)) {
-            return "NA";
-        }
 
         value = value.replace("|", "%|%");
         value = value.replace("\"", "\"|\"");
