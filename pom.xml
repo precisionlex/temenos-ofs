@@ -50,6 +50,13 @@
             <organization>PrecisionLex</organization>
             <organizationUrl>https://precisionlex.com</organizationUrl>
         </developer>
+        <developer>
+            <id>adrians</id>
+            <name>Adrians Berzins</name>
+            <email>adrians.berzins@precisionlex.com</email>
+            <organization>PrecisionLex</organization>
+            <organizationUrl>https://precisionlex.com</organizationUrl>
+        </developer>
     </developers>
 
     <scm>

@@ -254,8 +254,6 @@ public class OfsObjectMapper {
             value = value.substring(1, value.length() - 1);
         }
 
-        value = desanitizeText(value);
-
         String[] parts = fieldNameWithIndices.split(":");
         if (parts.length < 3) {
             return;
@@ -538,25 +536,4 @@ public class OfsObjectMapper {
         return value;
     }
 
-    private String desanitizeText(String sanitizedValue) {
-        if (sanitizedValue == null) {
-            return null;
-        }
-
-        if ("NA".equals(sanitizedValue)) {
-            return "";
-        }
-
-        String value = sanitizedValue;
-
-        value = value.replace("\"^\"", "/");
-        value = value.replace("%^%", "^");
-        value = value.replace("'_'", "_");
-        value = value.replace("\"?\"", ",");
-        value = value.replace("%?%", "?");
-        value = value.replace("\"|\"", "\"");
-        value = value.replace("%|%", "|");
-
-        return value;
-    }
 }

@@ -105,19 +105,6 @@ class SerializationTest {
     }
 
     @Test
-    void testNADeserialization() {
-        String ofsResponse = "TEST001/TXN001/1,"
-                + "FIELD1:1:1=\"NA\","
-                + "FIELD2:1:1=\"Normal text\"";
-
-        OfsObjectMapper mapper = new OfsObjectMapper();
-        OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
-
-        assertEquals("", response.getFields().get("FIELD1").get(0).getSimpleValue());
-        assertEquals("Normal text", response.getFields().get("FIELD2").get(0).getSimpleValue());
-    }
-
-    @Test
     void testEmptyStringRoundTrip() {
         OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("TEST");
@@ -132,7 +119,7 @@ class SerializationTest {
         assertTrue(serialized.contains("EMPTY.FIELD:1:1=\"NA\""));
 
         String mockResponse = "TEST001/TXN001/1,"
-                + "EMPTY.FIELD:1:1=\"NA\","
+                + "EMPTY.FIELD:1:1=\"\","
                 + "NORMAL.FIELD:1:1=\"Value\"";
 
         OfsTransactionResponse response = mapper.readTransactionResponse(mockResponse);
@@ -154,7 +141,7 @@ class SerializationTest {
 
         assertTrue(serialized.contains("DASH.FIELD:1:1=\"NA\""));
 
-        String mockResponse = "TEST001/TXN001/1,DASH.FIELD:1:1=\"NA\"";
+        String mockResponse = "TEST001/TXN001/1,DASH.FIELD:1:1=\"\"";
 
         OfsTransactionResponse response = mapper.readTransactionResponse(mockResponse);
 

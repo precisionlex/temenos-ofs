@@ -224,13 +224,13 @@ class TransactionDeserializationTest {
     @Test
     void testDeserializationWithReservedCharacters() {
         String ofsResponse = "TEST001/TXN001/1,"
-                + "DESCRIPTION:1:1=\"Test%|%pipe\"|\"quote%?%mark\"?\"comma'_'under%^%caret\"^\"slash\","
+                + "DESCRIPTION:1:1=\"Test|pipe?mark_under^caret/slash\","
                 + "NORMAL:1:1=\"Normal text\"";
 
         OfsObjectMapper mapper = new OfsObjectMapper();
         OfsTransactionResponse response = mapper.readTransactionResponse(ofsResponse);
 
-        assertEquals("Test|pipe\"quote?mark,comma_under^caret/slash",
+        assertEquals("Test|pipe?mark_under^caret/slash",
                 response.getFields().get("DESCRIPTION").get(0).getSimpleValue());
         assertEquals("Normal text", response.getFields().get("NORMAL").get(0).getSimpleValue());
     }
