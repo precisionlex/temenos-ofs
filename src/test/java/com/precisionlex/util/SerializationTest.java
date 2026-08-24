@@ -99,7 +99,7 @@ class SerializationTest {
 
         assertTrue(ofsRequestString.contains("Test%|%pipe\"|\"quote%?%mark\"?\"comma'_'under%^%caret\"^\"slash"));
 
-        assertTrue(ofsRequestString.contains("DASH.FIELD:1:1=\"NA\""));
+        assertTrue(ofsRequestString.contains("DASH.FIELD:1:1=\"-\""));
 
         assertTrue(ofsRequestString.contains("NORMAL.FIELD:1:1=\"Normal text\""));
     }
@@ -116,7 +116,7 @@ class SerializationTest {
         OfsObjectMapper mapper = new OfsObjectMapper();
         String serialized = mapper.writeValueAsString(request);
 
-        assertTrue(serialized.contains("EMPTY.FIELD:1:1=\"NA\""));
+        assertTrue(serialized.contains("EMPTY.FIELD:1:1=\"\""));
 
         String mockResponse = "TEST001/TXN001/1,"
                 + "EMPTY.FIELD:1:1=\"\","
@@ -139,12 +139,12 @@ class SerializationTest {
         OfsObjectMapper mapper = new OfsObjectMapper();
         String serialized = mapper.writeValueAsString(request);
 
-        assertTrue(serialized.contains("DASH.FIELD:1:1=\"NA\""));
+        assertTrue(serialized.contains("DASH.FIELD:1:1=\"-\""));
 
-        String mockResponse = "TEST001/TXN001/1,DASH.FIELD:1:1=\"\"";
+        String mockResponse = "TEST001/TXN001/1,DASH.FIELD:1:1=\"-\"";
 
         OfsTransactionResponse response = mapper.readTransactionResponse(mockResponse);
 
-        assertEquals("", response.getFields().get("DASH.FIELD").get(0).getSimpleValue());
+        assertEquals("-", response.getFields().get("DASH.FIELD").get(0).getSimpleValue());
     }
 }
