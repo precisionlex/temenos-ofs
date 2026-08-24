@@ -2,6 +2,7 @@ package com.precisionlex.util;
 
 import com.precisionlex.OfsObjectMapper;
 import com.precisionlex.OfsTransactionRequest;
+import com.precisionlex.OfsTransactionResponse;
 import com.precisionlex.enums.Function;
 import com.precisionlex.enums.ProcessingFlag;
 import com.precisionlex.enums.RequestType;
@@ -80,4 +81,70 @@ class SerializationTest {
         assertEquals(expectedResult, ofsRequstString);
     }
 
+    @Test
+    void testReservedCharacterSanitization() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("FUNDS.TRANSFER");
+        request.setVersion("TEST");
+        request.setFunction(Function.INPUT);
+        request.setProcessingFlag(ProcessingFlag.PROCESS);
+        request.setRecordId("TEST001");
+
+        request.setField("DESCRIPTION", "Test|pipe\"quote?mark,comma_under^caret/slash");
+        request.setField("DASH.FIELD", "-");
+        request.setField("NORMAL.FIELD", "Normal text");
+
+        OfsObjectMapper mapper = new OfsObjectMapper();
+        String ofsRequestString = mapper.writeValueAsString(request);
+
+        assertTrue(ofsRequestString.contains("Test%|%pipe\"|\"quote%?%mark\"?\"comma'_'under%^%caret\"^\"slash"));
+
+        assertTrue(ofsRequestString.contains("DASH.FIELD:1:1=\"NA\""));
+
+        assertTrue(ofsRequestString.contains("NORMAL.FIELD:1:1=\"Normal text\""));
+    }
+
+    @Test
+    void testEmptyStringRoundTrip() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("TEST");
+        request.setFunction(Function.INPUT);
+        request.setRecordId("TEST001");
+        request.setField("EMPTY.FIELD", "");
+        request.setField("NORMAL.FIELD", "Value");
+
+        OfsObjectMapper mapper = new OfsObjectMapper();
+        String serialized = mapper.writeValueAsString(request);
+
+        assertTrue(serialized.contains("EMPTY.FIELD:1:1=\"NA\""));
+
+        String mockResponse = "TEST001/TXN001/1,"
+                + "EMPTY.FIELD:1:1=\"\","
+                + "NORMAL.FIELD:1:1=\"Value\"";
+
+        OfsTransactionResponse response = mapper.readTransactionResponse(mockResponse);
+
+        assertEquals("", response.getFields().get("EMPTY.FIELD").get(0).getSimpleValue());
+        assertEquals("Value", response.getFields().get("NORMAL.FIELD").get(0).getSimpleValue());
+    }
+
+    @Test
+    void testDashFieldRoundTrip() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("TEST");
+        request.setFunction(Function.INPUT);
+        request.setRecordId("TEST001");
+        request.setField("DASH.FIELD", "-");
+
+        OfsObjectMapper mapper = new OfsObjectMapper();
+        String serialized = mapper.writeValueAsString(request);
+
+        assertTrue(serialized.contains("DASH.FIELD:1:1=\"NA\""));
+
+        String mockResponse = "TEST001/TXN001/1,DASH.FIELD:1:1=\"\"";
+
+        OfsTransactionResponse response = mapper.readTransactionResponse(mockResponse);
+
+        assertEquals("", response.getFields().get("DASH.FIELD").get(0).getSimpleValue());
+    }
 }

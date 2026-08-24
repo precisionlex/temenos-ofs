@@ -157,10 +157,12 @@ public class OfsObjectMapper {
                 for (int i = 0; i < multiValues.size(); i++) {
                     String value = multiValues.get(i);
 
+                    String sanitizedValue = sanitizeText(value != null ? value : "");
+
                     String serializedField = String.format("%s:%d:1=\"%s\"",
                         fieldName,
                         i + 1,
-                        value != null ? value : ""
+                        sanitizedValue
                     );
 
                     serializedFields.add(serializedField);
@@ -517,4 +519,18 @@ public class OfsObjectMapper {
         }
         return value;
     }
+
+    private String sanitizeText(String value) {
+
+        value = value.replace("|", "%|%");
+        value = value.replace("\"", "\"|\"");
+        value = value.replace("?", "%?%");
+        value = value.replace(",", "\"?\"");
+        value = value.replace("_", "'_'");
+        value = value.replace("^", "%^%");
+        value = value.replace("/", "\"^\"");
+
+        return value;
+    }
+
 }

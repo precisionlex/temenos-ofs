@@ -7,7 +7,7 @@
 
     <groupId>com.precisionlex</groupId>
     <artifactId>temenos-ofs</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>Temenos OFS</name>
@@ -47,6 +47,13 @@
             <id>artursjaneks</id>
             <name>Artūrs Janeks</name>
             <email>arturs.janeks@precisionlex.com</email>
+            <organization>PrecisionLex</organization>
+            <organizationUrl>https://precisionlex.com</organizationUrl>
+        </developer>
+        <developer>
+            <id>adrians</id>
+            <name>Adrians Berzins</name>
+            <email>adrians.berzins@precisionlex.com</email>
             <organization>PrecisionLex</organization>
             <organizationUrl>https://precisionlex.com</organizationUrl>
         </developer>
