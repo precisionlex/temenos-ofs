@@ -113,12 +113,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- server id in settings.xml -->
-                    <passphraseServerId>gpg.passphrase</passphraseServerId>
-                    <gpgArguments>
-                        <arg>--pinentry-mode</arg>
-                        <arg>loopback</arg>
-                    </gpgArguments>
                     <executable>gpg</executable>
                 </configuration>
             </plugin>
