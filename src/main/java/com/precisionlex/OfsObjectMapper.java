@@ -533,4 +533,124 @@ public class OfsObjectMapper {
         return value;
     }
 
+    /**
+    * Deserializes an OFS-formatted CSM response string into an OfsCsmResponse object.
+    * <p>
+    * The expected format is:
+    * {@code SUCCESSFUL_COUNT,SUSPENDED_COUNT,FAILED_COUNT/SUCCESSFUL_ENTRIES/SUSPENDED_ENTRIES/FAILED_ENTRIES}.
+    *  The first section contains the number of entries in each result category. The remaining
+    * sections contain the corresponding entry values, with multiple entries separated by commas.
+    * </p>
+    *
+    * @param ofsResponseString the OFS-formatted CSM response string to deserialize
+    * @return the deserialized OfsCsmResponse object
+    */
+
+    public OfsCsmResponse readCsmResponse(String ofsResponseString) {
+        OfsCsmResponse response = new OfsCsmResponse();
+
+        if (ofsResponseString == null || ofsResponseString.trim().isEmpty()) {
+            return response;
+        }
+
+        String[] parts = ofsResponseString.split("/", -1);
+        if (parts.length < 4) {
+            return response;
+        }
+
+        String[] counts = parts[0].split(",", -1);
+
+        if (counts.length < 3) {
+            return response;
+        }
+
+        try {
+            response.setSuccessfulEntriesCount(
+                Integer.parseInt(counts[0].trim()));
+            response.setSuspendedEntriesCount(
+                Integer.parseInt(counts[1].trim()));
+            response.setFailedEntriesCount(
+                Integer.parseInt(counts[2].trim()));
+        } catch (NumberFormatException e) {
+            return new OfsCsmResponse();
+        }
+
+        response.setSuccessfulEntries(parseCsmEntries(parts[1]));
+        response.setSuspendedEntries(parseCsmEntries(parts[2]));
+        response.setFailedEntries(parseCsmEntries(parts[3]));
+
+        return response;
+    }
+
+    private List<String> parseCsmEntries(String section) {
+        List<String> entries = new ArrayList<>();
+
+        if (section == null || section.trim().isEmpty()) {
+            return entries;
+        }
+
+        for (String entry : section.split(",")) {
+            String value = entry.trim();
+
+            if (!value.isEmpty()) {
+                entries.add(value);
+            }
+        }
+
+        return entries;
+    }
+
+    public String writeValueAsString(OfsCsmRequest request) {
+        StringBuilder ofs = new StringBuilder();
+
+        if (request.getInterfaceType() != null) {
+            ofs.append(request.getInterfaceType());
+        }
+        ofs.append("=");
+
+        if (request.getOperation() != null) {
+            ofs.append(request.getOperation());
+        }
+        ofs.append(",");
+
+        if (request.getOptions() != null) {
+            ofs.append(request.getOptions());
+        }
+        ofs.append(",");
+
+        if (request.getUserId() != null) {
+            ofs.append(request.getUserId());
+        }
+        ofs.append("/");
+
+        if (request.getPassword() != null) {
+            ofs.append(request.getPassword());
+        }
+        ofs.append("/");
+
+        if (request.getCompany() != null) {
+            ofs.append(request.getCompany());
+        }
+
+        if (request.getExtendedUserInformation() != null) {
+            for (String value : request.getExtendedUserInformation()) {
+                ofs.append("/");
+                if (value != null) {
+                    ofs.append(value);
+                }
+            }
+        }
+        ofs.append(",");
+
+        if (request.getProcessingRule() != null) {
+            ofs.append(request.getProcessingRule());
+        }
+        ofs.append(",");
+
+        if (request.getEntries() != null && !request.getEntries().isEmpty()) {
+            ofs.append(String.join("#", request.getEntries()));
+        }
+
+        return ofs.toString();
+    }
 }
