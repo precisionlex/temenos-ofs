@@ -21,6 +21,7 @@ public class OfsTransactionRequest {
     private String company;
     private String recordId;
     private Map<String, List<OfsField>> fields;
+    private boolean replace;
 
     public OfsTransactionRequest() { this.fields = new java.util.LinkedHashMap<>(); }
 
@@ -153,5 +154,13 @@ public class OfsTransactionRequest {
     public void setField(String key, List<String> multiValues) {
         OfsField field = new OfsField(multiValues);
         this.fields.put(key, List.of(field));
+    }
+
+    public boolean isReplace() {
+        return replace;
+    }
+
+    public void setReplace(boolean replace) {
+        this.replace = replace;
     }
 }

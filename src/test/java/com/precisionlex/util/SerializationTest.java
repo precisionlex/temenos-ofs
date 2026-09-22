@@ -82,6 +82,35 @@ class SerializationTest {
     }
 
     @Test
+    void testReplaceWithCredentials() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("EB.API");
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setAuthorisers(1);
+        request.setUserId("USER");
+        request.setPassword("PASSWORD");
+        request.setCompany("COMPANY");
+        request.setReplace(true);
+
+        String serialized = new OfsObjectMapper().writeValueAsString(request);
+
+        assertEquals("EB.API,/I/PROCESS//1,USER/PASSWORD/COMPANY///1,,", serialized);
+    }
+
+    @Test
+    void testReplaceWithoutCredentials() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("EB.API");
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setAuthorisers(1);
+        request.setReplace(true);
+
+        String serialized = new OfsObjectMapper().writeValueAsString(request);
+
+        assertEquals("EB.API,/I/PROCESS//1,/////1,,", serialized);
+    }
+
+    @Test
     void testReservedCharacterSanitization() {
         OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("FUNDS.TRANSFER");
