@@ -1,6 +1,7 @@
 package com.precisionlex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -59,23 +60,27 @@ public class OfsObjectMapper {
         ofs.append(",");
 
         // Only add user info section if at least one field is provided
-        boolean hasUserInfo = request.getUserId() != null || request.getPassword() != null || request.getCompany() != null;
+        String[] userInfo = {
+                request.getUserId(),
+                request.getPassword(),
+                request.getCompany(),
+                request.getUserInfoField4(),
+                request.getUserInfoField5(),
+                request.isReplace() ? "1" : ""
+        };
 
-        if (hasUserInfo) {
-            if (request.getUserId() != null) {
-                ofs.append(request.getUserId());
-            }
-            ofs.append("/");
-
-            if (request.getPassword() != null) {
-                ofs.append(request.getPassword());
-            }
-            ofs.append("/");
-
-            if (request.getCompany() != null) {
-                ofs.append(request.getCompany());
+        for (int i = 0; i < userInfo.length; i++) {
+            if (userInfo[i] == null) {
+                userInfo[i] = "";
             }
         }
+
+        int userInfoLength = userInfo.length;
+        while (userInfoLength > 0 && userInfo[userInfoLength - 1].isEmpty()) {
+            userInfoLength--;
+        }
+
+        ofs.append(String.join("/", Arrays.copyOf(userInfo, userInfoLength)));
         ofs.append(",");
 
         if (request.getRecordId() != null) {
