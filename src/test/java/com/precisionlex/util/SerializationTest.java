@@ -86,13 +86,13 @@ class SerializationTest {
         String[][] cases = {
                 {null, null, null, ""},
                 {"", "", "", ""},
-                {"USER", null, null, "USER"},
-                {null, "PASSWORD", null, "/PASSWORD"},
-                {null, null, "COMPANY", "//COMPANY"},
-                {"USER", "PASSWORD", null, "USER/PASSWORD"},
-                {"USER", null, "COMPANY", "USER//COMPANY"},
-                {"USER", "", "", "USER"},
-                {"", "PASSWORD", "", "/PASSWORD"}
+                {"INPUTT", null, null, "INPUTT"},
+                {null, "123456", null, "/123456"},
+                {null, null, "GB0010001", "//GB0010001"},
+                {"INPUTT", "123456", null, "INPUTT/123456"},
+                {"INPUTT", null, "GB0010001", "INPUTT//GB0010001"},
+                {"INPUTT", "", "", "INPUTT"},
+                {"", "123456", "", "/123456"}
         };
 
         for (String[] values : cases) {
@@ -115,14 +115,14 @@ class SerializationTest {
         request.setApplication("EB.API");
         request.setRequestType(RequestType.TRANSACTION);
         request.setAuthorisers(1);
-        request.setUserId("USER");
-        request.setPassword("PASSWORD");
-        request.setCompany("COMPANY");
+        request.setUserId("INPUTT");
+        request.setPassword("123456");
+        request.setCompany("GB0010001");
         request.setReplace(true);
 
         String serialized = new OfsObjectMapper().writeValueAsString(request);
 
-        assertEquals("EB.API,/I/PROCESS//1,USER/PASSWORD/COMPANY///1,,", serialized);
+        assertEquals("EB.API,/I/PROCESS//1,INPUTT/123456/GB0010001///1,,", serialized);
     }
 
     @Test
@@ -171,31 +171,31 @@ class SerializationTest {
         OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("EB.API");
         request.setRequestType(RequestType.TRANSACTION);
-        request.setUserId("USER");
-        request.setPassword("PASSWORD");
-        request.setCompany("COMPANY");
+        request.setUserId("INPUTT");
+        request.setPassword("123456");
+        request.setCompany("GB0010001");
         request.setUserInfoField4("VALUE4");
         request.setUserInfoField5("VALUE5");
         request.setReplace(true);
 
         OfsObjectMapper mapper = new OfsObjectMapper();
 
-        assertEquals("EB.API,/I/PROCESS,USER/PASSWORD/COMPANY/VALUE4/VALUE5/1,,",
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001/VALUE4/VALUE5/1,,",
                 mapper.writeValueAsString(request));
 
         request.setReplace(false);
 
-        assertEquals("EB.API,/I/PROCESS,USER/PASSWORD/COMPANY/VALUE4/VALUE5,,",
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001/VALUE4/VALUE5,,",
                 mapper.writeValueAsString(request));
 
         request.setUserInfoField5(null);
 
-        assertEquals("EB.API,/I/PROCESS,USER/PASSWORD/COMPANY/VALUE4,,",
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001/VALUE4,,",
                 mapper.writeValueAsString(request));
 
         request.setUserInfoField4(null);
 
-        assertEquals("EB.API,/I/PROCESS,USER/PASSWORD/COMPANY,,",
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001,,",
                 mapper.writeValueAsString(request));
     }
 
