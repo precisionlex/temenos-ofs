@@ -19,8 +19,11 @@ public class OfsTransactionRequest {
     private String userId;
     private String password;
     private String company;
+    private String userInfoField4;
+    private String userInfoField5;
     private String recordId;
     private Map<String, List<OfsField>> fields;
+    private boolean replace;
 
     public OfsTransactionRequest() { this.fields = new java.util.LinkedHashMap<>(); }
 
@@ -125,6 +128,22 @@ public class OfsTransactionRequest {
         this.company = company;
     }
 
+    public String getUserInfoField4() {
+        return userInfoField4;
+    }
+
+    public void setUserInfoField4(String userInfoField4) {
+        this.userInfoField4 = userInfoField4;
+    }
+
+    public String getUserInfoField5() {
+        return userInfoField5;
+    }
+
+    public void setUserInfoField5(String userInfoField5) {
+        this.userInfoField5 = userInfoField5;
+    }
+
     public String getRecordId() {
         return recordId;
     }
@@ -153,5 +172,13 @@ public class OfsTransactionRequest {
     public void setField(String key, List<String> multiValues) {
         OfsField field = new OfsField(multiValues);
         this.fields.put(key, List.of(field));
+    }
+
+    public boolean isReplace() {
+        return replace;
+    }
+
+    public void setReplace(boolean replace) {
+        this.replace = replace;
     }
 }

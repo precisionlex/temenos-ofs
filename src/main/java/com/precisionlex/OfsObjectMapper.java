@@ -59,23 +59,16 @@ public class OfsObjectMapper {
         ofs.append(",");
 
         // Only add user info section if at least one field is provided
-        boolean hasUserInfo = request.getUserId() != null || request.getPassword() != null || request.getCompany() != null;
+        OfsUserInformation userInfo = new OfsUserInformation(
+                request.getUserId(),
+                request.getPassword(),
+                request.getCompany(),
+                request.getUserInfoField4(),
+                request.getUserInfoField5(),
+                request.isReplace()
+        );
 
-        if (hasUserInfo) {
-            if (request.getUserId() != null) {
-                ofs.append(request.getUserId());
-            }
-            ofs.append("/");
-
-            if (request.getPassword() != null) {
-                ofs.append(request.getPassword());
-            }
-            ofs.append("/");
-
-            if (request.getCompany() != null) {
-                ofs.append(request.getCompany());
-            }
-        }
+        ofs.append(userInfo);
         ofs.append(",");
 
         if (request.getRecordId() != null) {
