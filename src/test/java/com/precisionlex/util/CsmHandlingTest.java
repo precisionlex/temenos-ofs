@@ -86,4 +86,17 @@ class CsmHandlingTest {
         assertTrue(response.isSuspended());
         assertTrue(response.isError());
     }
+
+    @Test
+    void testCsmUnexpectedResponseIsError() {
+        OfsObjectMapper mapper = new OfsObjectMapper();
+
+        OfsCsmResponse response = mapper.readCsmResponse("TAFJERR-1060: Session Expiration");
+
+        assertTrue(response.isError());
+        assertFalse(response.isSuccess());
+        assertEquals("TAFJERR-1060: Session Expiration", response.getErrorMessage());
+        assertTrue(mapper.readCsmResponse(null).isError());
+        assertTrue(mapper.readCsmResponse("").isError());
+    }
 }

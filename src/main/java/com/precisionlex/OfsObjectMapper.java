@@ -550,18 +550,19 @@ public class OfsObjectMapper {
         OfsCsmResponse response = new OfsCsmResponse();
 
         if (ofsResponseString == null || ofsResponseString.trim().isEmpty()) {
-            return response;
+            return csmError("Empty CSM response");
         }
 
-        String[] parts = ofsResponseString.split("/", -1);
+        String raw = ofsResponseString.trim();
+        String[] parts = raw.split("/", -1);
         if (parts.length < 4) {
-            return response;
+            return csmError(raw);
         }
 
         String[] counts = parts[0].split(",", -1);
 
         if (counts.length < 3) {
-            return response;
+            return csmError(raw);
         }
 
         try {
@@ -572,13 +573,20 @@ public class OfsObjectMapper {
             response.setFailedEntriesCount(
                 Integer.parseInt(counts[2].trim()));
         } catch (NumberFormatException e) {
-            return new OfsCsmResponse();
+            return csmError(raw);
         }
 
         response.setSuccessfulEntries(parseCsmEntries(parts[1]));
         response.setSuspendedEntries(parseCsmEntries(parts[2]));
         response.setFailedEntries(parseCsmEntries(parts[3]));
 
+        return response;
+    }
+
+    private OfsCsmResponse csmError(String message) {
+        OfsCsmResponse response = new OfsCsmResponse();
+        response.setError(true);
+        response.setErrorMessage(message);
         return response;
     }
 

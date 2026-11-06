@@ -8,6 +8,9 @@ public class OfsCsmResponse {
     private int suspendedEntriesCount;
     private int failedEntriesCount;
 
+    private boolean error;
+    private String errorMessage;
+
     private List<String> successfulEntries = new ArrayList<>();
     private List<String> suspendedEntries = new ArrayList<>();
     private List<String> failedEntries = new ArrayList<>();
@@ -47,7 +50,19 @@ public class OfsCsmResponse {
     }
  
     public boolean isError() {
-        return failedEntriesCount > 0;
+        return error || failedEntriesCount > 0;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public List<String> getSuccessfulEntries() {
