@@ -13,14 +13,17 @@ public class OfsTransactionRequest {
     private String version;
     private String requestType;
     private String function;
-    private String processingFlag;
+    private String processingFlag = ProcessingFlag.PROCESS.getValue();
     private String options;
     private Integer authorisers;
     private String userId;
     private String password;
     private String company;
+    private String ofsAlias;
+    private String userAliasPassword;
     private String recordId;
     private Map<String, List<OfsField>> fields;
+    private boolean replace;
 
     public OfsTransactionRequest() { this.fields = new java.util.LinkedHashMap<>(); }
 
@@ -125,6 +128,22 @@ public class OfsTransactionRequest {
         this.company = company;
     }
 
+    public String getOfsAlias() {
+        return ofsAlias;
+    }
+
+    public void setOfsAlias(String ofsAlias) {
+        this.ofsAlias = ofsAlias;
+    }
+
+    public String getUserAliasPassword() {
+        return userAliasPassword;
+    }
+
+    public void setUserAliasPassword(String userAliasPassword) {
+        this.userAliasPassword = userAliasPassword;
+    }
+
     public String getRecordId() {
         return recordId;
     }
@@ -153,5 +172,13 @@ public class OfsTransactionRequest {
     public void setField(String key, List<String> multiValues) {
         OfsField field = new OfsField(multiValues);
         this.fields.put(key, List.of(field));
+    }
+
+    public boolean isReplace() {
+        return replace;
+    }
+
+    public void setReplace(boolean replace) {
+        this.replace = replace;
     }
 }

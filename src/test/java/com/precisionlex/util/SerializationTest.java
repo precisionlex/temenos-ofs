@@ -82,6 +82,144 @@ class SerializationTest {
     }
 
     @Test
+    void testUserInfoUsesLastOccupiedPosition() {
+        assertEquals("EB.API,/I/PROCESS,,,",
+                serializeWithUserInfo(null, null, null));
+        assertEquals("EB.API,/I/PROCESS,,,",
+                serializeWithUserInfo("", "", ""));
+        assertEquals("EB.API,/I/PROCESS,INPUTT,,",
+                serializeWithUserInfo("INPUTT", null, null));
+        assertEquals("EB.API,/I/PROCESS,/123456,,",
+                serializeWithUserInfo(null, "123456", null));
+        assertEquals("EB.API,/I/PROCESS,//GB0010001,,",
+                serializeWithUserInfo(null, null, "GB0010001"));
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456,,",
+                serializeWithUserInfo("INPUTT", "123456", null));
+        assertEquals("EB.API,/I/PROCESS,INPUTT//GB0010001,,",
+                serializeWithUserInfo("INPUTT", null, "GB0010001"));
+        assertEquals("EB.API,/I/PROCESS,INPUTT,,",
+                serializeWithUserInfo("INPUTT", "", ""));
+        assertEquals("EB.API,/I/PROCESS,/123456,,",
+                serializeWithUserInfo("", "123456", ""));
+    }
+
+    private String serializeWithUserInfo(String userId, String password, String company) {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("EB.API");
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setUserId(userId);
+        request.setPassword(password);
+        request.setCompany(company);
+        return new OfsObjectMapper().writeValueAsString(request);
+    }
+
+
+    @Test
+    void testReplaceWithCredentials() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("EB.API");
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setAuthorisers(1);
+        request.setUserId("INPUTT");
+        request.setPassword("123456");
+        request.setCompany("GB0010001");
+        request.setReplace(true);
+
+        String serialized = new OfsObjectMapper().writeValueAsString(request);
+
+        assertEquals("EB.API,/I/PROCESS//1,INPUTT/123456/GB0010001///1,,", serialized);
+    }
+
+    @Test
+    void testReplaceWithoutCredentials() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("EB.API");
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setAuthorisers(1);
+        request.setReplace(true);
+
+        String serialized = new OfsObjectMapper().writeValueAsString(request);
+
+        assertEquals("EB.API,/I/PROCESS//1,/////1,,", serialized);
+    }
+
+    @Test
+    void testAdditionalUserInfoPositionsWithoutCredentials() {
+        assertEquals("EB.API,/I/PROCESS,///VALUE4,,",
+                serializeWithAdditionalUserInfo("VALUE4", null, false));
+        assertEquals("EB.API,/I/PROCESS,///VALUE4//1,,",
+                serializeWithAdditionalUserInfo("VALUE4", null, true));
+
+        assertEquals("EB.API,/I/PROCESS,////VALUE5,,",
+                serializeWithAdditionalUserInfo(null, "VALUE5", false));
+        assertEquals("EB.API,/I/PROCESS,////VALUE5/1,,",
+                serializeWithAdditionalUserInfo(null, "VALUE5", true));
+
+        assertEquals("EB.API,/I/PROCESS,///VALUE4/VALUE5,,",
+                serializeWithAdditionalUserInfo("VALUE4", "VALUE5", false));
+        assertEquals("EB.API,/I/PROCESS,///VALUE4/VALUE5/1,,",
+                serializeWithAdditionalUserInfo("VALUE4", "VALUE5", true));
+
+        assertEquals("EB.API,/I/PROCESS,////VALUE5,,",
+                serializeWithAdditionalUserInfo("", "VALUE5", false));
+        assertEquals("EB.API,/I/PROCESS,////VALUE5/1,,",
+                serializeWithAdditionalUserInfo("", "VALUE5", true));
+
+        assertEquals("EB.API,/I/PROCESS,///VALUE4,,",
+                serializeWithAdditionalUserInfo("VALUE4", "", false));
+        assertEquals("EB.API,/I/PROCESS,///VALUE4//1,,",
+                serializeWithAdditionalUserInfo("VALUE4", "", true));
+
+        assertEquals("EB.API,/I/PROCESS,,,",
+                serializeWithAdditionalUserInfo("", "", false));
+        assertEquals("EB.API,/I/PROCESS,/////1,,",
+                serializeWithAdditionalUserInfo("", "", true));
+    }
+
+    private String serializeWithAdditionalUserInfo(String ofsAlias, String userAliasPassword, boolean replace) {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("EB.API");
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setOfsAlias(ofsAlias);
+        request.setUserAliasPassword(userAliasPassword);
+        request.setReplace(replace);
+        return new OfsObjectMapper().writeValueAsString(request);
+    }
+
+    @Test
+    void testReplaceWithAdditionalUserInfoPositions() {
+        OfsTransactionRequest request = new OfsTransactionRequest();
+        request.setApplication("EB.API");
+        request.setRequestType(RequestType.TRANSACTION);
+        request.setUserId("INPUTT");
+        request.setPassword("123456");
+        request.setCompany("GB0010001");
+        request.setOfsAlias("VALUE4");
+        request.setUserAliasPassword("VALUE5");
+        request.setReplace(true);
+
+        OfsObjectMapper mapper = new OfsObjectMapper();
+
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001/VALUE4/VALUE5/1,,",
+                mapper.writeValueAsString(request));
+
+        request.setReplace(false);
+
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001/VALUE4/VALUE5,,",
+                mapper.writeValueAsString(request));
+
+        request.setUserAliasPassword(null);
+
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001/VALUE4,,",
+                mapper.writeValueAsString(request));
+
+        request.setOfsAlias(null);
+
+        assertEquals("EB.API,/I/PROCESS,INPUTT/123456/GB0010001,,",
+                mapper.writeValueAsString(request));
+    }
+
+    @Test
     void testReservedCharacterSanitization() {
         OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("FUNDS.TRANSFER");
@@ -132,7 +270,7 @@ class SerializationTest {
     void testDashFieldRoundTrip() {
         OfsTransactionRequest request = new OfsTransactionRequest();
         request.setApplication("TEST");
-        request.setFunction(Function.INPUT);
+        request.setFunction("I");
         request.setRecordId("TEST001");
         request.setField("DASH.FIELD", "-");
 
