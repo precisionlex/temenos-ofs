@@ -1,10 +1,12 @@
 package com.precisionlex;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Represents the user information section of an OFS message.
  * <p>
  * Serialized as a slash-delimited positional string:
- * {@code USER_ID/PASSWORD/COMPANY/FIELD4/FIELD5/REPLACE}
+ * {@code USER_ID/PASSWORD/COMPANY/OFS_ALIAS/USER_ALIAS_PASSWORD/REPLACE}
  * Trailing empty segments are omitted; empty middle segments are preserved.
  * </p>
  */
@@ -13,20 +15,20 @@ public class OfsUserInformation {
     private String userId;
     private String password;
     private String company;
-    private String field4;
-    private String field5;
+    private String ofsAlias;
+    private String userAliasPassword;
     private boolean replace;
 
     public OfsUserInformation() {
     }
 
     public OfsUserInformation(String userId, String password, String company,
-                              String field4, String field5, boolean replace) {
+                              String ofsAlias, String userAliasPassword, boolean replace) {
         this.userId = userId;
         this.password = password;
         this.company = company;
-        this.field4 = field4;
-        this.field5 = field5;
+        this.ofsAlias = ofsAlias;
+        this.userAliasPassword = userAliasPassword;
         this.replace = replace;
     }
 
@@ -54,20 +56,20 @@ public class OfsUserInformation {
         this.company = company;
     }
 
-    public String getField4() {
-        return field4;
+    public String getOfsAlias() {
+        return ofsAlias;
     }
 
-    public void setField4(String field4) {
-        this.field4 = field4;
+    public void setOfsAlias(String ofsAlias) {
+        this.ofsAlias = ofsAlias;
     }
 
-    public String getField5() {
-        return field5;
+    public String getUserAliasPassword() {
+        return userAliasPassword;
     }
 
-    public void setField5(String field5) {
-        this.field5 = field5;
+    public void setUserAliasPassword(String userAliasPassword) {
+        this.userAliasPassword = userAliasPassword;
     }
 
     public boolean isReplace() {
@@ -79,27 +81,16 @@ public class OfsUserInformation {
     }
 
     /**
-     * Serializes to the OFS positional format: {@code USER/PASSWORD/COMPANY/F4/F5/REPLACE}.
+     * Serializes to the OFS positional format: {@code USER/PASSWORD/COMPANY/OFS_ALIAS/USER_ALIAS_PASSWORD/REPLACE}.
      * Null fields become empty segments; trailing empty segments are dropped.
      */
     @Override
     public String toString() {
-        String[] parts = {userId, password, company, field4, field5, replace ? "1" : ""};
-
-        int end = parts.length;
-        while (end > 0 && (parts[end - 1] == null || parts[end - 1].isEmpty())) {
-            end--;
+        String[] fields = {userId, password, company, ofsAlias, userAliasPassword, replace ? "1" : ""};
+        int fieldCount = fields.length;
+        while (fieldCount > 0 && StringUtils.isEmpty(fields[fieldCount - 1])) {
+            fieldCount--;
         }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < end; i++) {
-            if (i > 0) {
-                sb.append('/');
-            }
-            if (parts[i] != null) {
-                sb.append(parts[i]);
-            }
-        }
-        return sb.toString();
+        return StringUtils.join(fields, '/', 0, fieldCount);
     }
 }

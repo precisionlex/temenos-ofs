@@ -13,14 +13,14 @@ public class OfsTransactionRequest {
     private String version;
     private String requestType;
     private String function;
-    private String processingFlag;
+    private String processingFlag = ProcessingFlag.PROCESS.getValue();
     private String options;
     private Integer authorisers;
     private String userId;
     private String password;
     private String company;
-    private String userInfoField4;
-    private String userInfoField5;
+    private String ofsAlias;
+    private String userAliasPassword;
     private String recordId;
     private Map<String, List<OfsField>> fields;
     private boolean replace;
@@ -128,20 +128,20 @@ public class OfsTransactionRequest {
         this.company = company;
     }
 
-    public String getUserInfoField4() {
-        return userInfoField4;
+    public String getOfsAlias() {
+        return ofsAlias;
     }
 
-    public void setUserInfoField4(String userInfoField4) {
-        this.userInfoField4 = userInfoField4;
+    public void setOfsAlias(String ofsAlias) {
+        this.ofsAlias = ofsAlias;
     }
 
-    public String getUserInfoField5() {
-        return userInfoField5;
+    public String getUserAliasPassword() {
+        return userAliasPassword;
     }
 
-    public void setUserInfoField5(String userInfoField5) {
-        this.userInfoField5 = userInfoField5;
+    public void setUserAliasPassword(String userAliasPassword) {
+        this.userAliasPassword = userAliasPassword;
     }
 
     public String getRecordId() {

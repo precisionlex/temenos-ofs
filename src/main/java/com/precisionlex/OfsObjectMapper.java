@@ -63,8 +63,8 @@ public class OfsObjectMapper {
                 request.getUserId(),
                 request.getPassword(),
                 request.getCompany(),
-                request.getUserInfoField4(),
-                request.getUserInfoField5(),
+                request.getOfsAlias(),
+                request.getUserAliasPassword(),
                 request.isReplace()
         );
 
